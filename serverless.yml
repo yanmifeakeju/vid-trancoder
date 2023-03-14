@@ -1,0 +1,29 @@
+service: transcoded
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  stage: dev
+  region: 'us-east-1'
+
+functions:
+  transcodeVideo:
+    handler: transcodeVideo/index.handler
+    role: ${self:custom.transcode-video-role}
+    package:
+      individually: true
+    environment:
+      MEDIA_ENDPOINT: ${self:custom.media-endpoint}
+      MEDIA_ROLE: ${self:custom.media-role}
+      TRANSCODED_VIDEO_BUCKET: ${self:custom.transcode-bucket}
+    events:
+      - s3: ${self:custom.upload-bucket}
+
+custom:
+  upload-bucket: yanmifeakeju-processor-bucket
+  transcode-bucket: transcode-1678760228
+  transcode-video-role: arn:aws:iam::827732830466:role/media-convert
+  media-endpoint: https://lxlxpswfb.mediaconvert.us-east-1.amazonaws.com
+  media-role: arn:aws:iam::827732830466:role/media-conver-role
